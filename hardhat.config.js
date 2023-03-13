@@ -1,5 +1,7 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config()
+require("hardhat-gas-reporter")
+require("solidity-coverage")
 
 const SEPOLIA_PRIVATE_KEY=process.env.SEPOLIA_PRIVATE_KEY
 const SEPOLIA_RPC_URL=process.env.SEPOLIA_RPC_URL
@@ -17,4 +19,7 @@ module.exports = {
     },
   },
   solidity: "0.8.18",
+  gasReporter: {
+    enabled: false,
+  },
 };
