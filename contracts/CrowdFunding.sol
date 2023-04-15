@@ -21,7 +21,7 @@ contract CrowdFunding {
     mapping(uint256 => mapping(address => bool)) s_IsParticipate;
 
     event NewCrowdFunding(address creator, address receiver, uint256 goal);
-    event Funding(address funder, uint256 amount);
+    event Bid(address funder, uint256 crowdFundingId);
     event Withdraw(address caller, uint256 crowdFundingId, address receiver);
 
     modifier checkIfParticipate(uint256 crowdFunding) {
@@ -47,7 +47,7 @@ contract CrowdFunding {
             addr: msg.sender,
             amount: msg.value
         }));
-        emit Funding(msg.sender, msg.value);
+        emit Bid(msg.sender, crowdFundingId);
     } 
 
     function getCrowdFundInfoById(uint256 crowdFundingId) public view returns (CrowdFund memory info) {
