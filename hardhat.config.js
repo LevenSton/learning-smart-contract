@@ -7,6 +7,9 @@ require("hardhat-deploy")
 const SEPOLIA_PRIVATE_KEY=process.env.SEPOLIA_PRIVATE_KEY
 const SEPOLIA_RPC_URL=process.env.SEPOLIA_RPC_URL
 const ETHERSCAN_API_KEY=process.env.ETHERSCAN_API_KEY
+
+const GOERLI_PRIVATE_KEY=process.env.GOERLI_PRIVATE_KEY
+const GOERLI_RPC_URL=process.env.GOERLI_RPC_URL
 /** @type import('hardhat/config').HardhatUserConfig */
 
 module.exports = {
@@ -17,6 +20,12 @@ module.exports = {
       url: SEPOLIA_RPC_URL,
       accounts: [SEPOLIA_PRIVATE_KEY],
       chainId: 11155111,
+      blockConfirmations: 6,
+    },
+    goerli: {
+      url: GOERLI_RPC_URL,
+      accounts: [GOERLI_PRIVATE_KEY],
+      chainId: 5,
       blockConfirmations: 6,
     },
   },
