@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/CrowdFunding.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.8;\n\ncontract CrowdFunding {\n\n    struct CrowdFund {\n        address payable receiver;\n        uint256 fundingGoal;\n        uint256 fundNumers;\n        uint256 totalAmounts;\n    }\n    struct Funder {\n        address addr;\n        uint256 amount;\n    }\n\n    uint256 public s_CrowdFundId;\n    mapping(uint256 => CrowdFund) s_CrowdFundMap;\n    mapping(uint256 => Funder[]) s_FundersMap;\n\n    mapping(uint256 => mapping(address => bool)) s_IsParticipate;\n\n    event NewCrowdFunding(address creator, address receiver, uint256 goal);\n    event Bid(address funder, uint256 crowdFundingId);\n    event Withdraw(address caller, uint256 crowdFundingId, address receiver);\n\n    modifier checkIfParticipate(uint256 crowdFunding) {\n        require(!s_IsParticipate[crowdFunding][msg.sender], \"Every account only can paticipate one time...\");\n        _;\n    }\n\n    function newCrowdFunding(address payable receiver, uint256 goal) external returns (uint256 newCrowdFundingId) {\n        newCrowdFundingId = s_CrowdFundId++;\n        CrowdFund storage newCrowdFund = s_CrowdFundMap[newCrowdFundingId];\n        newCrowdFund.receiver = receiver;\n        newCrowdFund.fundingGoal = goal;\n        emit NewCrowdFunding(msg.sender, receiver, goal);\n    } \n\n    function funding(uint256 crowdFundingId) external payable checkIfParticipate(crowdFundingId) {\n        require(msg.value > 0, \"msg.value need large than zero...\");\n        require(crowdFundingId <= s_CrowdFundId, \"invaild crowdFunding id...\");\n        s_CrowdFundMap[crowdFundingId].fundNumers++;\n        s_CrowdFundMap[crowdFundingId].totalAmounts += msg.value;\n        s_IsParticipate[crowdFundingId][msg.sender] = true;\n        s_FundersMap[crowdFundingId].push(Funder({\n            addr: msg.sender,\n            amount: msg.value\n        }));\n        emit Bid(msg.sender, crowdFundingId);\n    } \n\n    function getCrowdFundInfoById(uint256 crowdFundingId) public view returns (CrowdFund memory info) {\n        info = s_CrowdFundMap[crowdFundingId];\n    }\n\n    function isParticipate(uint256 crowdFundingId, address funder) public view returns (bool) {\n        return s_IsParticipate[crowdFundingId][funder];\n    }\n\n    function withdrawFunding(uint256 crowdFundngId) external returns (bool success) {\n        CrowdFund storage c = s_CrowdFundMap[crowdFundngId];\n        uint256 amount = c.totalAmounts;\n        require(\n            amount >= c.fundingGoal,\n            \"Can not withdraw caz not hit the Goal...\"\n        );\n        c.totalAmounts = 0;\n        c.receiver.transfer(amount);\n        emit Withdraw(msg.sender, amount, c.receiver);\n        success = true;\n    }\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
